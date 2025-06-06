@@ -1,8 +1,6 @@
 
 @inline function _rho(E,m) 
-    #
-    # FIXME: implement this!
-    #
+  return sqrt(E^2 - m^2)
 end
 
 """
@@ -46,10 +44,19 @@ julia> differential_cross_section(E_in, cos_theta)
 # References
 - Schwartz 2014: M.D. Schwartz, "Quantum Field Theory and the Standard Model", Cambridge University Press, New York (2014)
 """
-function differential_cross_section(E_in, cos_theta)
-    #
-    # FIXME: fill me in
-    #
+function differential_cross_section(E_in, cos_theta)  
+    
+
+    ELECTRON_MASS =  0.51099895000
+    MUON_MASS = 105.6583755
+    ALPHA =  0.0072973525643
+
+    rho_muo = _rho(E_in, MUON_MASS)
+    rho_electron = _rho(E_in,  ELECTRON_MASS )
+    
+    return (ALPHA^2) / (16 * E_in^6) * (
+    E_in^4 + rho_electron^2 * rho_muo^2 * cos_theta^2 + E_in^2 * (ELECTRON_MASS^2 + MUON_MASS^2) )
+
 end
 
 """
@@ -85,9 +92,17 @@ julia> total_cross_section(E_in)
 ```
 """
 function total_cross_section(E_in)
-    #
-    # FIXME: fill me in
-    #
+
+    ELECTRON_MASS =  0.51099895000
+    MUON_MASS = 105.6583755
+    ALPHA =  0.0072973525643
+
+    rho_muo = _rho(E_in, 105.6583755)
+    rho_electron = _rho(E_in,  ELECTRON_MASS  )
+
+   return (pi * ALPHA^2) / (8 * E_in^6) * (rho_muo / rho_electron) * (
+    2 * E_in^4 + (2/3) * rho_muo^2 * rho_electron^2 + 2 * E_in^2 * (MUON_MASS ^2 + ELECTRON_MASS^2))
+
 end
 
 

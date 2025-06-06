@@ -3,6 +3,8 @@
   return sqrt(E^2 - m^2)
 end
 
+@assert _rho(1e3, ELECTRON_MASS) == 999.999869440028
+
 """
     differential_cross_section(E_in::Real, cos_theta::Real)
 
@@ -45,11 +47,6 @@ julia> differential_cross_section(E_in, cos_theta)
 - Schwartz 2014: M.D. Schwartz, "Quantum Field Theory and the Standard Model", Cambridge University Press, New York (2014)
 """
 function differential_cross_section(E_in, cos_theta)  
-    
-
-    ELECTRON_MASS =  0.51099895000
-    MUON_MASS = 105.6583755
-    ALPHA =  0.0072973525643
 
     rho_muo = _rho(E_in, MUON_MASS)
     rho_electron = _rho(E_in,  ELECTRON_MASS )
@@ -57,6 +54,12 @@ function differential_cross_section(E_in, cos_theta)
     return (ALPHA^2) / (16 * E_in^6) * (
     E_in^4 + rho_electron^2 * rho_muo^2 * cos_theta^2 + E_in^2 * (ELECTRON_MASS^2 + MUON_MASS^2) )
 
+end
+
+@testset "differential cross section" begin
+    @testset "E = $E, cth = $cth" for (E,cth) in Iterators.product(ENERGIES, COSTHETAS)
+        @test isapprox(differential_cross_section(E,cth),groundtruth_diffCS(E,cth))
+    end
 end
 
 """
@@ -104,6 +107,8 @@ function total_cross_section(E_in)
     2 * E_in^4 + (2/3) * rho_muo^2 * rho_electron^2 + 2 * E_in^2 * (MUON_MASS ^2 + ELECTRON_MASS^2))
 
 end
+
+@assert total_cross_section(1e3) == 5.576208658540326e-11
 
 
 
